@@ -3,9 +3,9 @@ run-name: Build Trio (${{ github.ref_name }})
 on:
   workflow_dispatch:
   schedule:
-    # Check for updates every Sunday and Wednesday
+    # Check for updates every day
     #   Later logic builds if there are updates or if it is the 2nd Sunday of the month
-    - cron: "43 6 * * 0,3" # Sunday and Wednesday at UTC 06:43
+    - cron: "43 6 * * *" # Daily at UTC 06:43
 
 env:
   GH_PAT: ${{ secrets.GH_PAT }}
@@ -142,7 +142,8 @@ jobs:
         run: |
           DAY_OF_MONTH=$(date +%-d)
           WEEK_OF_MONTH=$(( ($(date +%-d) - 1) / 7 + 1 ))
-          if [[ $WEEK_OF_MONTH -eq 2 ]]; then
+          # Daily schedule: only force the monthly build on the 2nd Sunday, not every day of week 2
+          if [[ $WEEK_OF_MONTH -eq 2 && $(date +%u) -eq 7 ]]; then
             echo "is_second_instance=true" >> "$GITHUB_OUTPUT"
           else
             echo "is_second_instance=false" >> "$GITHUB_OUTPUT"
