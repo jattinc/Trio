@@ -1,0 +1,47 @@
+diff --git a/OmnipodKit/OmnipodKit/PumpManagerUI/Views/PodDetailsView.swift b/OmnipodKit/OmnipodKit/PumpManagerUI/Views/PodDetailsView.swift
+index cd92421..93d609a 100644
+--- a/OmnipodKit/OmnipodKit/PumpManagerUI/Views/PodDetailsView.swift
++++ b/OmnipodKit/OmnipodKit/PumpManagerUI/Views/PodDetailsView.swift
+@@ -81,18 +81,30 @@ struct PodDetailsView: View {
+     /// Returns the string for the number of hours pod was active to two decimals. This value is always
+     /// based on the pod's internal clock whether it is from a faulted, deactivated or currently active pod.
+     var podHoursText: String {
+-        let podTime: TimeInterval
++        return podActiveTime.hours.twoDecimals
++    }
+ 
++    private var podActiveTime: TimeInterval {
+         if let faultTime = podDetails.fault?.faultEventTimeSinceActivation {
+             /// Since the pod has a valid faultEventTimeSinceActivation, use this rather than the pod's time.
+             /// Reset type pod faults return atypical fault time values that will not be considered valid on decode.
+-            podTime = faultTime
++            return faultTime
+         } else {
+             /// Otherwise use the always increasing podTime to compute the pod
+             /// hours for reset pod faults, deactivated pods, or currently active pods.
+-            podTime = podDetails.podTime
++            return podDetails.podTime
++        }
++    }
++
++    /// Returns the average insulin delivered per hour over the life of the pod. Total delivery already
++    /// excludes the prime and cannula insertion units. Not shown for the first hour as it would be misleading.
++    var averageHourlyDeliveryText: String {
++        let hours = podActiveTime.hours
++        if let delivery = podDetails.totalDelivery, hours >= 1 {
++            return String(format: LocalizedString("%@ U", comment: "Format string for average hourly delivery on pod details screen"), (delivery / hours).twoDecimals)
++        } else {
++            return LocalizedString("NA", comment: "String shown on pod details for average hourly delivery when not available.")
+         }
+-        return podTime.hours.twoDecimals
+     }
+ 
+     var lastStatusText: String {
+@@ -123,6 +135,7 @@ struct PodDetailsView: View {
+             row(LocalizedString("Firmware Version", comment: "description label for firmware version pod details row"), value: podDetails.firmwareVersion)
+             row(LocalizedString("BLE Firmware Version", comment: "description label for ble firmware version pod details row"), value: podDetails.bleFirmwareVersion)
+             row(LocalizedString("Total Delivery", comment: "description label for total delivery pod details row"), value: totalDeliveryText)
++            row(LocalizedString("Average Hourly Delivery", comment: "description label for average hourly delivery pod details row"), value: averageHourlyDeliveryText)
+             row(LocalizedString("Pod Hours", comment: "description label for pod hours pod details row"), value: podHoursText)
+             if let activatedAt = podDetails.activatedAt {
+                 row(LocalizedString("Activation", comment: "description label for activation pod details row"), value: dateFormatter.string(from: activatedAt))
