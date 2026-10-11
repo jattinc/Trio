@@ -9,6 +9,7 @@ extension History.RootView {
                 Spacer()
                 filterFutureEntriesButton
             }
+            TodaysMealsSummaryRow()
             if !carbEntryStored.isEmpty {
                 ForEach(carbEntryStored.filter({ !showFutureEntries ? $0.date ?? Date() <= Date() : true })) { item in
                     mealView(item)

@@ -385,6 +385,8 @@ extension MealSettings {
                         }
                     )
                 }
+
+                HypoTreatmentSettingsSection()
             }
             .listSectionSpacing(sectionSpacing)
             .sheet(isPresented: $shouldDisplayHint) {

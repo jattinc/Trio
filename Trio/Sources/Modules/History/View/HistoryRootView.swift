@@ -77,6 +77,7 @@ extension History {
                             case .glucose: glucoseList
                             case .meals: mealsList
                             case .adjustments: adjustmentsList
+                            case .ratios: HistoryRatiosList(units: state.units)
                             }
                         }.scrollContentBackground(.hidden)
                             .background(appState.trioBackgroundColor(for: colorScheme))

@@ -82,6 +82,9 @@ struct EditOverrideForm: View {
         NavigationView {
             List {
                 editOverride()
+                if override.isPreset, let presetID = override.id {
+                    OverrideAutomationSection(presetID: presetID, units: state.units)
+                }
                 saveButton
             }
             .listSectionSpacing(10)

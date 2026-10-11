@@ -8,6 +8,7 @@ extension History.RootView {
                 Text("Adjustment").foregroundStyle(.secondary)
                 Spacer()
             }
+            HistoryActiveAdjustmentRows(units: state.units)
             if !combinedAdjustments.isEmpty {
                 ForEach(combinedAdjustments) { item in
                     adjustmentView(for: item)

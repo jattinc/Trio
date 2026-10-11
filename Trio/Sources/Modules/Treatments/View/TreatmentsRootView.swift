@@ -437,6 +437,8 @@ extension Treatments {
                             }.listRowBackground(Color.chart)
 
                             treatmentButton
+
+                            hypoTreatmentSection
                         }
                         .listSectionSpacing(sectionSpacing)
                         .onChange(of: focusedField) { _, newValue in
