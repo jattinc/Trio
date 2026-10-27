@@ -13,6 +13,7 @@ import LoopKitUI
 import Observation
 import SwiftDate
 import SwiftUI
+import SyaiKit
 
 extension Home {
     @Observable final class StateModel: BaseStateModel<Provider> {
@@ -451,7 +452,7 @@ extension Home {
                 try controller.performFetch()
                 republish()
             } catch {
-                debug(.default, "\(DebuggingIdentifiers.failed) Failed to re-anchor fetch window for \(T.self): \(error)")
+                warning(.ui, "Moving home fetch window for \(T.self) failed", error: error)
             }
         }
 
@@ -660,9 +661,6 @@ extension Home {
                 .receive(on: DispatchQueue.main)
                 .map { [weak self] error in
                     self?.errorDate = error == nil ? nil : Date()
-                    if let error = error {
-                        debug(.default, "APSManager lastError: \(String(describing: error))")
-                    }
                     return error?.localizedDescription
                 }
                 .weakAssign(to: \.errorMessage, on: self)
@@ -932,6 +930,9 @@ extension Home {
             case let accuChek as AccuChekCgmManager:
                 return accuChek.state.cgmEndTime
 
+            case let syai as SyaiCGMManager:
+                return syai.sensorExpirationDate
+
             default:
                 return nil
             }
@@ -976,6 +977,9 @@ extension Home {
                     return warmupCompleted
                 }
                 return nil
+
+            case let syai as SyaiCGMManager:
+                return syai.sensorWarmupEndDate
 
             default:
                 return nil

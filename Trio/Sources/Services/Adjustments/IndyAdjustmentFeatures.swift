@@ -132,7 +132,7 @@ final class IndyOverrideAutomation: Injectable {
                 let outcome = try await adjustmentManager.activateOverride(.presetID(presetID), source: .app)
                 started.append(outcome.started?.name ?? String(localized: "Override"))
             } catch {
-                debug(.service, "Hypo treatment: could not start override preset \(presetID): \(error)")
+                debug(.treatments, "Hypo treatment: could not start override preset \(presetID): \(error)")
             }
         }
 
@@ -141,7 +141,7 @@ final class IndyOverrideAutomation: Injectable {
                 let outcome = try await adjustmentManager.activateTempTarget(.presetID(presetID), source: .app)
                 started.append(outcome.started?.name ?? String(localized: "Temp Target"))
             } catch {
-                debug(.service, "Hypo treatment: could not start temp target preset \(presetID): \(error)")
+                debug(.treatments, "Hypo treatment: could not start temp target preset \(presetID): \(error)")
             }
         }
 
@@ -288,7 +288,7 @@ final class IndyOverrideAutomation: Injectable {
             switch decision {
             case let .cancel(reason):
                 try await adjustmentManager.cancelOverride(source: .app)
-                debug(.service, "Override automation: ended \"\(active.name)\" because \(reason)")
+                debug(.treatments, "Override automation: ended \"\(active.name)\" because \(reason)")
                 notify(
                     title: String(localized: "Override Ended"),
                     body: String(localized: "\(active.name) ended because \(reason).")
@@ -296,14 +296,14 @@ final class IndyOverrideAutomation: Injectable {
             case let .startNext(presetID, reason):
                 let outcome = try await adjustmentManager.activateOverride(.presetID(presetID), source: .app)
                 let nextName = outcome.started?.name ?? String(localized: "Override")
-                debug(.service, "Override automation: \"\(active.name)\" ended because \(reason); started \"\(nextName)\"")
+                debug(.treatments, "Override automation: \"\(active.name)\" ended because \(reason); started \"\(nextName)\"")
                 notify(
                     title: String(localized: "Override Changed"),
                     body: String(localized: "\(active.name) ended because \(reason). Started \(nextName).")
                 )
             }
         } catch {
-            debug(.service, "Override automation failed for \"\(active.name)\": \(error)")
+            debug(.treatments, "Override automation failed for \"\(active.name)\": \(error)")
         }
     }
 
@@ -323,7 +323,7 @@ final class IndyOverrideAutomation: Injectable {
         )
         UNUserNotificationCenter.current().add(request) { error in
             if let error {
-                debug(.service, "Override automation notification failed: \(error)")
+                debug(.treatments, "Override automation notification failed: \(error)")
             }
         }
     }
