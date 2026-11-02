@@ -5,7 +5,7 @@ on:
   schedule:
     # Check for updates every day
     #   Later logic builds if there are updates or if it is the 2nd Sunday of the month
-    - cron: "43 6 * * *" # Daily at UTC 06:43 (dev-Indy)
+    - cron: "7 22 * * *" # Daily at UTC 22:07 - GitHub starts schedules hours late, so this lands off US peak when free macOS runners are available
 
 env:
   GH_PAT: ${{ secrets.GH_PAT }}
