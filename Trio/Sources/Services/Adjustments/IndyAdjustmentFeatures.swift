@@ -776,7 +776,7 @@ struct HistoryRatiosList: View {
     private func isfText(_ value: Decimal?) -> String {
         guard let value else { return "–" }
         return units == .mgdL ? "\(NSDecimalNumber(decimal: Trio.rounded(value, scale: 0, roundingMode: .plain)).intValue)" :
-            value.formattedAsMmolL
+            value.formatted(for: .mmolL)
     }
 
     private func crText(_ value: Decimal?) -> String {
