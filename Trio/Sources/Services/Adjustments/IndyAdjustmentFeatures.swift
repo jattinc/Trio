@@ -619,8 +619,8 @@ struct HistoryActiveAdjustmentRows: View {
         start: Date?,
         end: Date?
     ) -> some View {
-        let startText = start.map { Formatter.dateFormatter.string(from: $0) } ?? ""
-        let endText = end.map { Formatter.dateFormatter.string(from: $0) } ?? String(localized: "indefinitely")
+        let startText = start.map { Formatter.timeFormatterIndy.string(from: $0) } ?? ""
+        let endText = end.map { Formatter.timeFormatterIndy.string(from: $0) } ?? String(localized: "indefinitely")
 
         VStack(alignment: .leading, spacing: 2) {
             HStack {
@@ -775,8 +775,7 @@ struct HistoryRatiosList: View {
 
     private func isfText(_ value: Decimal?) -> String {
         guard let value else { return "–" }
-        return units == .mgdL ? "\(NSDecimalNumber(decimal: Trio.rounded(value, scale: 0, roundingMode: .plain)).intValue)" :
-            value.formatted(for: .mmolL)
+        return value.formattedISF(for: units)
     }
 
     private func crText(_ value: Decimal?) -> String {
