@@ -35,14 +35,6 @@ extension Formatter {
         return dateFormatter
     }()
 
-    static let decimalFormatterWithOneFractionDigit: NumberFormatter = {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-        formatter.locale = .current
-        formatter.maximumFractionDigits = 1
-        return formatter
-    }()
-
     static let integerFormatter: NumberFormatter = {
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
@@ -70,20 +62,20 @@ extension Duration {
 
     /// Which units a span shows. All round down.
     enum SpanStyle {
-        /// Days, hours and minutes, for stored values: "1d 1h 30m".
+        /// Days, hours and minutes, for stored values: "1 day 1 hr 30 min".
         case exact
-        /// Hours and minutes under a day, days and hours from a day on, for countdowns and ages: "2d 16h".
+        /// Hours and minutes under a day, days and hours from a day on, for countdowns and ages: "2 days 16 hr".
         case largestTwoUnits
-        /// Minutes only, for settings counted in minutes: "90m".
+        /// Minutes only, for settings counted in minutes: "90 min".
         case minutes
     }
 
-    /// Compact span, rounded down: "45m", "1h 30m", "5d 14h", "< 1m".
+    /// Compact span, rounded down: "45 min", "1 hr 30 min", "5 days 14 hr", "< 1 min".
     func formattedTimeSpan(_ style: SpanStyle = .exact, locale: Locale = .autoupdatingCurrent) -> String {
         if isUnderAMinute {
-            return "<\u{00A0}" + Duration.seconds(60).timeSpan(style, width: .narrow, locale: locale)
+            return "<\u{00A0}" + Duration.seconds(60).timeSpan(style, width: .condensedAbbreviated, locale: locale)
         }
-        return timeSpan(style, width: .narrow, locale: locale)
+        return timeSpan(style, width: .condensedAbbreviated, locale: locale)
     }
 
     /// VoiceOver form of `formattedTimeSpan`: "1 hour, 30 minutes", "less than a minute".
@@ -95,7 +87,7 @@ extension Duration {
         return timeSpan(style, width: .wide, locale: locale)
     }
 
-    /// Zero is an exact length, like an unset duration picker, so it stays "0m" rather than "< 1m".
+    /// Zero is an exact length, like an unset duration picker, so it stays "0 min" rather than "< 1 min".
     var isUnderAMinute: Bool { self < .seconds(60) && self != .zero }
 
     private func timeSpan(_ style: SpanStyle, width: UnitsFormatStyle.UnitWidth, locale: Locale) -> String {
@@ -109,7 +101,7 @@ extension Duration {
 }
 
 extension Date {
-    /// Time since this date, rounded down: "7m", "1h 30m", "< 1m".
+    /// Time since this date, rounded down: "7 min", "1 hr 30 min", "< 1 min".
     func formattedTimeAgo(locale: Locale = .autoupdatingCurrent) -> String {
         Duration.seconds(-timeIntervalSinceNow).formattedTimeSpan(.largestTwoUnits, locale: locale)
     }
@@ -127,6 +119,13 @@ extension Date {
             localized: "\(elapsed.formattedSpokenTimeSpan(.largestTwoUnits, locale: locale)) ago",
             comment: "Accessibility: elapsed time; %@ is a duration like \"1 hour, 59 minutes\". Word it so %@ stays unchanged (German: \"%@ her\")."
         )
+    }
+}
+
+extension Decimal {
+    /// IOB, up to two decimals. Rounds first so -0.004 shows "0", not "-0".
+    func formattedIOB(locale: Locale = .autoupdatingCurrent) -> String {
+        rounded(scale: 2).formatted(.number.precision(.fractionLength(0 ... 2)).locale(locale))
     }
 }
 
